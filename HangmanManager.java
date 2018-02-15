@@ -61,6 +61,7 @@ public class HangmanManager{
    			word.get(tempPattern).add(s);
 
    		}
+   		//Github Testaroni
 
    	}
    
@@ -81,7 +82,7 @@ public class HangmanManager{
 //    }
 //   
    	private void initDictionary(){
-      	for(String s: dictionary){
+      	for(String s: dictionary){ // <-- currentaly throwing null pointer here
          	if(s.length() != length){
             	dictionary.remove(s);
          	}
