@@ -7,24 +7,27 @@ public class HangmanManager{
    	private int length;
    	private int max;
    	private List<String> dictionary;
-   	private TreeMap<String,Set<String>> word;
+   	private Map<String,Set<String>> word;
    	private String pattern;
    	private SortedSet<Character> guesses;
    
    	public HangmanManager(List<String> dictionary, int length, int max){
       	this.length = length;
       	this.max = max;
-      	initDictionary();
+        this.dictionary = dictionary;
+        initMap();
     	  //populateMap();
       
    	}
    
    	public Set<String> words(){
-    	  return word.get(pattern);
+    	 
+        return word.get(pattern);
+        
    	}
    
    	public int guessesLeft(){
-    	  return max;
+    	return max;
    	}
    
    	public SortedSet<Character> guesses(){
@@ -37,55 +40,87 @@ public class HangmanManager{
    
    //subtract from max after every wrong guesses
    	public int record(char guess){
-      	guesses.add(guess);
+      	int count = 0;
+        guesses.add(guess);
         updateMap(guess);
-        return 0; //temp return statement to make it compile :)
-      
+        pattern = compareSize();
+        for(int x = 0 ; x < length; x++){
+            if(pattern.charAt(x) != '-'){
+               count++;
+            }  
+        } 
+        return count;       
    	}
 
 
    	private void updateMap(char g){
 		//I think this might acthualy work!!!!!
    		for(String s: dictionary){
-   			String tempPattern = "";
-   			for(int x=0; x< s.length(); x++){
-   				if(s.charAt(x) == g){
-   					tempPattern+="g";
-   				}else{
-   					tempPattern+="-";
-   				}
-   			}
-   			if(!word.containsKey(tempPattern)){
-   				word.put(tempPattern, new HashSet<String>());
-   			}
-   			word.get(tempPattern).add(s);
-
+   		   if(s.length() == length){
+               String tempPattern = "";
+      			for(int x=0; x< s.length(); x++){
+      				if(s.charAt(x) == g){
+      					tempPattern+="g";
+      				}else{
+      					tempPattern+="-";
+      				}
+      			}
+      			if(!word.containsKey(tempPattern)){
+      				word.put(tempPattern, new TreeSet<String>());
+      			}
+      			word.get(tempPattern).add(s);
+            }
    		}
-   		//Github Testaroni
 
    	}
    
-  
+    private String compareSize(){
+        int biggestSize = 0;
+        String biggestKey="";
+        for(String key : word.keySet()){
+            int size=0;
+            for(String s : word.get(key)){
+               size++;              
+            }
+            if(size>biggestSize){
+               biggestKey=key;
+            }
+        }
+        return biggestKey;
+      }
       
-//    private void populateMap(){
-//       String key = "";
-//       for(int x=0; x<length ; x++){
-//          key += "-";
-//       }
-//       Set<String> match = new Set<String>();
-//       for(String s: dictionary){
-//          if(s.length == length){
-//             match.add(s);      
+//    	private void initDictionary(){
+//       	for(String s: dictionary){
+//          	if(s.length() != length){
+//             	dictionary.remove(s);
+//          	}
+//       	}
+//    	} 
+
+//          private void initDictionary(){
+//         
+//             for(int x = 0; x < dictionary.size() ; x++){
+//                if(dictionary.get(x).length() != length){
+//                   dictionary.remove(x);
+//                   
+//                }
+//             }
+//          
 //          }
-//       }
-//       word.put(key, match);
-//    }
-//   
-   	private void initDictionary(){
-      	for(String s: dictionary){ // <-- currentaly throwing null pointer here
-         	if(s.length() != length){
-            	dictionary.remove(s);
-         	}
-      	}
-   	} 
+    private void initMap(){
+       word = new TreeMap<String, Set<String>>();
+       String temp = "";
+       for(int y = 0 ; y < length; y++){
+          temp += "-";
+       }
+       Set<String> value = new TreeSet<String>();
+       for(int x = 0; x < dictionary.size(); x++){
+          if(dictionary.get(x).length() == length){
+            value.add(dictionary.get(x));
+             
+          }
+       }
+       word.put(temp,value);
+       pattern = temp;
+    }
 }
